@@ -6,7 +6,13 @@ function fetchPosts(page = 1) {
     success: function (data) {
       console.log(data);
       displayPosts(data.results);
-      setupPagination(data.count, data.next, data.previous);
+      setupPagination(
+        data.count,
+        data.links.next,
+        data.links.previous,
+        data.currentPage,
+        data.pageSize
+      );
     },
     error: function (error) {
       console.log(error);
@@ -32,27 +38,33 @@ function displayPosts(posts) {
   $("#posts-list").html(html);
 }
 
-function setupPagination(totalPosts, nextPage, prevPage) {
+function setupPagination(
+  totalPosts,
+  nextPage,
+  prevPage,
+  currentPage,
+  pageSize
+) {
   let paginationHtml = "";
+  const totalPages = Math.ceil(totalPosts / pageSize);
   if (prevPage) {
-    let prevPageNumber = getPageNumber(prevPage);
-    if (!prevPageNumber) {
-      prevPageNumber = "1";
-      prevPage +=
-        (prevPage.includes("?") ? "&" : "?") + "page=" + prevPageNumber;
-    }
-    paginationHtml += `<a href="#" onclick="fetchPosts(${prevPageNumber})">이전</a>`;
+    paginationHtml += `<a href="#" onclick="fetchPosts(${
+      currentPage - 1
+    })">이전</a> <t>`;
   }
-  // TODO: 현재 페이지를 계산하고 페이지 번호들을 렌더링할 로직을 추가합니다.
-  if (nextPage) {
-    paginationHtml += `<a href="#" onclick="fetchPosts(getPageNumber('${nextPage}'))">다음</a>`;
-  }
-  $("#pagination").html(paginationHtml);
-}
 
-function getPageNumber(url) {
-  var urlParts = new URL(url);
-  return urlParts.searchParams.get("page");
+  if (nextPage) {
+    paginationHtml += `<a href="#" onclick="fetchPosts(${
+      currentPage + 1
+    })">다음</a> <t>`;
+  }
+  paginationHtml += `<div> Page Navigator:`;
+  for (let i = 1; i <= totalPages; i++) {
+    paginationHtml += `<a href="#" onclick="fetchPosts(${i})">${i}</a> <t>`;
+  }
+  paginationHtml += `</div>`;
+  paginationHtml += `<t> <div>현재 페이지: ${currentPage}</div>`;
+  $("#pagination").html(paginationHtml);
 }
 
 fetchPosts();
