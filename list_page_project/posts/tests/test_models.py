@@ -7,11 +7,7 @@ class PostModelTest(TestCase):
     @classmethod
     def setUp(cls):
         test_user = User.objects.create_user(username="testuser", password="12345")
-        test_user.save()
-        test_post = Post.objects.create(
-            title="Test Post", content="test post", author=test_user
-        )
-        test_post.save()
+        Post.objects.create(title="Test Post", content="test post", author=test_user)
 
     def test_post_content(self):
         post = Post.objects.get(id=1)
@@ -29,7 +25,7 @@ class PostModelTest(TestCase):
         test_user = User.objects.get(username="testuser")
         Comment.objects.create(post=post, author=test_user, content="Test comment")
         Comment.objects.create(post=post, author=test_user, content="Test comment2")
-        self.assertEquals(post.lastest_comment.content, "Test comment2")
+        self.assertEquals(post.latest_comment.content, "Test comment2")
 
 
 class CommentModelTest(TestCase):
