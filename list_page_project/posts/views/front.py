@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
-
+from posts.models import Post
+from posts.forms import CommentForm
 
 def post_list(request):
     return render(request, "post_list.html")
@@ -29,3 +30,31 @@ class PostCreateView(View):
             return redirect("post_list")
         else:
             return render(request, "post_create.html", {"form": form})
+
+class PostDetailView(View):
+    def get(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        comments = post.comments.all()  
+        comment_form = CommentForm()
+        return render(request, "post_detail.html", {
+            "post": post,
+            "comments": comments,
+            "comment_form": comment_form
+        })
+
+    def post(self, request, pk):
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.post = get_object_or_404(Post, pk=pk)  
+            comment.author = request.user  
+            comment.save()
+            return redirect('post_detail', pk=pk)
+        else:
+            post = get_object_or_404(Post, pk=pk)
+            comments = post.comments.all()
+            return render(request, "post_detail.html", {
+                "post": post,
+                "comments": comments,
+                "comment_form": comment_form
+            })
