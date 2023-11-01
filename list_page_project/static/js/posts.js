@@ -34,18 +34,22 @@ function resetSearch() {
 }
 
 function displayPosts(posts) {
+  const MAX_COMMENT_LENGTH = 50;
   let html = "";
   posts.forEach((post) => {
-    authorUsername = post.author.username;
+    let commentText = "댓글이 없습니다.";
+    if (post.latest_comment) {
+      commentText = post.latest_comment.content;
+      if (commentText.length > MAX_COMMENT_LENGTH) {
+        commentText = commentText.substring(0, MAX_COMMENT_LENGTH) + " ...";
+      }
+    }
+
     html += `
                 <div class="post">
                     <h2><a href="/posts/${post.id}/">${post.title}</a></h2>
                     <p>작성자: ${post.author.username}</p>
-                    <p>최근 댓글: ${
-                      post.latest_comment
-                        ? post.latest_comment.content
-                        : "댓글이 없습니다."
-                    }</p>
+                    <p>최근 댓글: ${commentText}</p>
                 </div>
             `;
   });

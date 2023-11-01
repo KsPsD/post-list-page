@@ -40,21 +40,23 @@ class PostViewSet(viewsets.ModelViewSet):
             .values("id")[:1]
         )
 
-        queryset = Post.objects.annotate(
+        posts_with_latest_comment = Post.objects.annotate(
             latest_comment_id=Subquery(latest_comment_subquery)
         )
 
-        queryset = queryset.prefetch_related(
-            Prefetch(
-                "comments",
-                queryset=Comment.objects.filter(
-                    id__in=queryset.values("latest_comment_id")
-                ),
-                to_attr="latest_comment_prefetched",
+        posts_with_prefetched_latest_comment = (
+            posts_with_latest_comment.prefetch_related(
+                Prefetch(
+                    "comments",
+                    queryset=Comment.objects.filter(
+                        id__in=posts_with_latest_comment.values("latest_comment_id")
+                    ),
+                    to_attr="latest_comment_prefetched",
+                )
             )
         )
 
-        return queryset
+        return posts_with_prefetched_latest_comment
 
 
 class CommentViewSet(viewsets.ModelViewSet):
