@@ -8,12 +8,11 @@ function fetchPosts(page = 1, searchQuery = "") {
     type: "GET",
     dataType: "json",
     success: function (data) {
-      console.log(data);
       displayPosts(data.results);
       setupPagination(
         data.count,
-        data.next,
-        data.previous,
+        data.links.next,
+        data.links.previous,
         page,
         data.pageSize
       );
@@ -37,10 +36,11 @@ function resetSearch() {
 function displayPosts(posts) {
   let html = "";
   posts.forEach((post) => {
+    authorUsername = post.author.username;
     html += `
                 <div class="post">
-                    <h2>${post.title}</h2>
-                    <p>작성자: ${post.author}</p>
+                    <h2><a href="/posts/${post.id}/">${post.title}</a></h2>
+                    <p>작성자: ${post.author.username}</p>
                     <p>최근 댓글: ${
                       post.latest_comment
                         ? post.latest_comment.content
