@@ -22,8 +22,11 @@ class Post(TimestampedModel):
         return self.title
 
     @property
-    def lastest_comment(self):
+    def latest_comment(self):
         return self.comments.first()
+
+    class Meta:
+        ordering = ["-created_at"]
 
 
 class Comment(TimestampedModel):

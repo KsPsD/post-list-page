@@ -1,3 +1,8 @@
+from django.urls import include, path
+from posts.views.api import CommentViewSet, PostViewSet
+from posts.views.front import PostCreateView, post_list
+from rest_framework.routers import DefaultRouter
+
 """
 URL configuration for list_page_project project.
 
@@ -17,6 +22,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+router = DefaultRouter()
+router.register("posts", PostViewSet)
+router.register("comments", CommentViewSet)
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
+    path("api/", include(router.urls)),
+    path("posts/", include("posts.urls")),
 ]
