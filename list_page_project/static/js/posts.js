@@ -1,6 +1,10 @@
-function fetchPosts(page = 1) {
+function fetchPosts(page = 1, searchQuery = "") {
+  let url = `/api/posts/?page=${page}${
+    searchQuery && `&search=${encodeURIComponent(searchQuery)}`
+  }`;
+
   $.ajax({
-    url: `/api/posts/?page=${page}`,
+    url: url,
     type: "GET",
     dataType: "json",
     success: function (data) {
@@ -8,16 +12,26 @@ function fetchPosts(page = 1) {
       displayPosts(data.results);
       setupPagination(
         data.count,
-        data.links.next,
-        data.links.previous,
-        data.currentPage,
+        data.next,
+        data.previous,
+        page,
         data.pageSize
       );
     },
     error: function (error) {
-      console.log(error);
+      alert("데이터를 가져오는데 문제가 발생했습니다.");
     },
   });
+}
+
+function searchPosts() {
+  const query = $("#search-field").val();
+  fetchPosts(1, query);
+}
+
+function resetSearch() {
+  $("#search-field").val("");
+  fetchPosts();
 }
 
 function displayPosts(posts) {
