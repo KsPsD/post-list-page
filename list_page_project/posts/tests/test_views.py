@@ -56,3 +56,42 @@ class PostCreateViewTestCase(APITestCase):
         self.assertRedirects(response, reverse("post_list"))
         self.assertEqual(Post.objects.count(), 1)
         self.assertEqual(Post.objects.first().title, "New Post Title")
+
+
+class PostDetailViewTests(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_superuser(
+            "admin", "admin@test.com", "adminpassword"
+        )
+        self.post = Post.objects.create(
+            title="Test Post", content="Test Content", author=self.user
+        )
+
+    def test_get_post_detail(self):
+        response = self.client.get(reverse("post_detail", kwargs={"pk": self.post.pk}))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.post.title)
+        self.assertContains(response, self.post.content)
+        self.assertTemplateUsed(response, "post_detail.html")
+
+    def test_post_comment(self):
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post(
+            reverse("post_detail", kwargs={"pk": self.post.pk}),
+            {"content": "A test comment."},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response, reverse("post_detail", kwargs={"pk": self.post.pk})
+        )
+        self.assertEqual(self.post.comments.count(), 1)
+        self.assertEqual(self.post.comments.first().content, "A test comment.")
+
+    def test_invalid_comment_post(self):
+        response = self.client.post(
+            reverse("post_detail", kwargs={"pk": self.post.pk}), {"content": ""}
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertFormError(
+            response, "comment_form", "content", "This field is required."
+        )
