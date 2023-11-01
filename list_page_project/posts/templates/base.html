@@ -6,9 +6,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Post-list{% endblock %}</title>
-    {% block extra_head %}{% endblock %}
+    {% block extra_head %}
+    {% endblock %}
 </head>
-<body>
+<body> 
     <header>
         <h1><a href="{% url 'post_list' %}">게시물 목록 페이지 개발</a></h1>
     </header>
@@ -28,10 +29,10 @@
         {% endblock %}
 
 
-    {% block extra_js %}{% endblock %}
+        {% block extra_js %}
+        {% endblock %}
 
     </main>
-
         <footer>
             <p>&copy; 2023 어터 Assignment</p>
         </footer>
