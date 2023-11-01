@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Manager
-from django.utils import timezone
 
 from list_page_project.core.models import TimestampedModel
 
