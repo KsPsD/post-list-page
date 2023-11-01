@@ -14,5 +14,9 @@
     },
     "[python]": {
       "editor.defaultFormatter": "ms-python.black-formatter"
-    }
+    },
+    "[javascript]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      },
   }
